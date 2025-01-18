@@ -26,7 +26,6 @@ const schema = z.object({
 export default function Page() {
   const { login } = useAuth({
     middleware: "guest",
-    redirectIfAuthenticated: "/dashboard",
   });
 
   const form = useForm<z.infer<typeof schema>>({

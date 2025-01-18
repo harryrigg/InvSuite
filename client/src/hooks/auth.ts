@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useCallback, useEffect } from "react";
 
 import api from "@/lib/api";
@@ -19,12 +19,14 @@ type LoginDetails = {
   password: string;
 };
 
+type LoginResponse = {
+  redirect: string | null;
+};
+
 export const useAuth = ({
   middleware,
-  redirectIfAuthenticated,
 }: {
   middleware?: "guest" | "auth";
-  redirectIfAuthenticated?: string;
 } = {}) => {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -67,8 +69,11 @@ export const useAuth = ({
     await csrf();
 
     api
-      .post("/login", details)
-      .then(() => invalidateUser())
+      .post<LoginResponse>("/login", details)
+      .then((resp) => {
+        invalidateUser();
+        if (resp.data.redirect) redirect(resp.data.redirect);
+      })
       .catch((e) => {
         if (e.response?.status !== 422) throw e;
 
@@ -85,12 +90,30 @@ export const useAuth = ({
   }, [invalidateUser, error]);
 
   useEffect(() => {
-    if (middleware === "guest" && redirectIfAuthenticated && user) {
-      router.push(redirectIfAuthenticated);
+    if (middleware === "auth" && error) {
+      logout();
+      return;
     }
 
-    if (middleware === "auth" && error) logout();
-  }, [middleware, redirectIfAuthenticated, logout, router, user, error]);
+    if (middleware === "guest" && user) {
+      if (user.email_verified_at) {
+        return router.push("/dashboard");
+      } else {
+        return router.push("/verify-email");
+      }
+    }
+
+    if (middleware === "auth" && user && !user.email_verified_at) {
+      return router.push("/verify-email");
+    }
+
+    if (
+      window.location.pathname === "/verify-email" &&
+      user?.email_verified_at
+    ) {
+      return router.push("/dashboard");
+    }
+  }, [middleware, logout, router, user, error]);
 
   return {
     user,

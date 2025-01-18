@@ -39,13 +39,13 @@ const schema = z
 export default function Page() {
   const { register } = useAuth({
     middleware: "guest",
-    redirectIfAuthenticated: "/dashboard",
   });
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
       name: "",
+      business_name: "",
       email: "",
       password: "",
       password_confirmation: "",
