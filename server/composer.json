@@ -9,9 +9,11 @@
         "php": "^8.2",
         "laravel/framework": "^11.31",
         "laravel/sanctum": "^4.0",
-        "laravel/tinker": "^2.9"
+        "laravel/tinker": "^2.9",
+        "spatie/laravel-event-sourcing": "^7.10"
     },
     "require-dev": {
+        "barryvdh/laravel-ide-helper": "^3.2",
         "fakerphp/faker": "^1.23",
         "laravel/breeze": "^2.2",
         "laravel/pail": "^1.1",
