@@ -81,7 +81,7 @@ function EditDialog({ existingUrl, item, children }: EditDialogProps) {
     } else {
       setImageUrl(existingUrl);
     }
-  }, [open]);
+  }, [open, existingUrl]);
 
   const { mutate: upload } = useUploadInventoryItemImage({
     inventoryItemId: item.id,

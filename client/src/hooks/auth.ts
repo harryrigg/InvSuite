@@ -41,8 +41,10 @@ export const useAuth = ({
       return api.get<User>("/api/user").then((res) => res.data);
     },
   });
-  const invalidateUser = () =>
-    queryClient.invalidateQueries({ queryKey: ["user"] });
+  const invalidateUser = useCallback(
+    () => queryClient.invalidateQueries({ queryKey: ["user"] }),
+    [queryClient],
+  );
 
   const csrf = () => api.get("/sanctum/csrf-cookie");
 
@@ -80,7 +82,7 @@ export const useAuth = ({
     }
 
     window.location.pathname = "/login";
-  }, [error]);
+  }, [invalidateUser, error]);
 
   useEffect(() => {
     if (middleware === "guest" && redirectIfAuthenticated && user) {

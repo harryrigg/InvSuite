@@ -46,6 +46,7 @@ export function setFormErrors<T extends FieldValues>(
   for (const key in errors.errors) {
     const fieldErrors = errors.errors[key];
     for (const message of fieldErrors) {
+      /* eslint-disable @typescript-eslint/no-explicit-any */
       form.setError(key as any, { type: "manual", message });
     }
   }
