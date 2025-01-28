@@ -47,16 +47,21 @@ export default function AppSidebar({ activeRoute }: Props) {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          {routes.map((route) => (
-            <SidebarMenuItem key={route.name}>
-              <SidebarMenuButton isActive={route.route === activeRoute} asChild>
-                <Link href={`/dashboard/${route.route}`}>
-                  <route.icon />
-                  <span>{route.name}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+          <SidebarMenu>
+            {routes.map((route) => (
+              <SidebarMenuItem key={route.name}>
+                <SidebarMenuButton
+                  isActive={route.route === activeRoute}
+                  asChild
+                >
+                  <Link href={`/dashboard/${route.route}`}>
+                    <route.icon />
+                    <span>{route.name}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
