@@ -5,12 +5,10 @@ import { notFound, useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { InventoryItem } from "@/lib/types/inventory";
+import { PurchaseOrder } from "@/lib/types/purchase-order";
 
-import { useFetchInventoryItemAdjustmentList } from "@/hooks/queries/inventory/adjustment/fetch-list";
-import { useDeleteInventoryItem } from "@/hooks/queries/inventory/delete";
-import { useFetchInventoryItem } from "@/hooks/queries/inventory/fetch";
-import { useFetchInventoryItemImage } from "@/hooks/queries/inventory/fetch-image";
+import { useDeletePurchaseOrder } from "@/hooks/queries/purchase-order/delete";
+import { useFetchPurchaseOrder } from "@/hooks/queries/purchase-order/fetch";
 
 import { AppBreadcrumbs } from "@/components/app-breadcrumbs";
 import DeleteButton from "@/components/delete-button";
@@ -22,48 +20,37 @@ import Loader from "@/components/loader";
 import { PageCardContainer } from "@/components/page-card";
 import { LinkButton } from "@/components/ui/button";
 
-import AdjustmentsSection from "./adjustments-section";
 import DetailsSection from "./details-section";
 
 export default function Load() {
   const id = useParams<{ id: string }>().id;
 
-  const { data, isPending, isError } = useFetchInventoryItem({ id });
-  const adjustmentQuery = useFetchInventoryItemAdjustmentList({ id });
-  const imageQuery = useFetchInventoryItemImage({ id });
+  const { data, isPending, isError } = useFetchPurchaseOrder({ id });
 
   if (isError) {
     notFound();
   } else if (isPending) {
     return <Loader />;
   } else {
-    return (
-      <Page
-        item={data}
-        imageQuery={imageQuery}
-        adjustmentsQuery={adjustmentQuery}
-      />
-    );
+    return <Page purchaseOrder={data} />;
   }
 }
 
 interface PageProps {
-  item: InventoryItem;
-  imageQuery: ReturnType<typeof useFetchInventoryItemImage>;
-  adjustmentsQuery: ReturnType<typeof useFetchInventoryItemAdjustmentList>;
+  purchaseOrder: PurchaseOrder;
 }
 
-function Page({ item, imageQuery, adjustmentsQuery }: PageProps) {
+function Page({ purchaseOrder }: PageProps) {
   const router = useRouter();
 
   const [deleteOpen, setDeleteOpen] = useState(false);
   const { mutate: mutateDelete, isPending: isDeletePending } =
-    useDeleteInventoryItem({
-      id: item.id,
+    useDeletePurchaseOrder({
+      id: purchaseOrder.id,
       onSuccess: () => {
-        toast.success("Item deleted");
+        toast.success("Purchase Order deleted");
         setDeleteOpen(false);
-        router.push("/dashboard/inventory");
+        router.push("/dashboard/purchase-order");
       },
     });
 
@@ -72,7 +59,10 @@ function Page({ item, imageQuery, adjustmentsQuery }: PageProps) {
       <InternalHeader>
         <AppBreadcrumbs />
         <InternalHeaderActions>
-          <LinkButton size="xs" href={`/dashboard/inventory/${item.id}/edit`}>
+          <LinkButton
+            size="xs"
+            href={`/dashboard/purchase-order/${purchaseOrder.id}/edit`}
+          >
             <SquarePen /> Edit Details
           </LinkButton>
           <DeleteButton
@@ -80,13 +70,12 @@ function Page({ item, imageQuery, adjustmentsQuery }: PageProps) {
             setOpen={setDeleteOpen}
             mutate={mutateDelete}
             isPending={isDeletePending}
-            title="Delete Inventory Item"
+            title="Delete Purchase Order"
           />
         </InternalHeaderActions>
       </InternalHeader>
       <PageCardContainer>
-        <DetailsSection item={item} imageQuery={imageQuery} />
-        <AdjustmentsSection item={item} query={adjustmentsQuery} />
+        <DetailsSection purchaseOrder={purchaseOrder} />
       </PageCardContainer>
     </>
   );

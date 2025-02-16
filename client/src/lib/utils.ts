@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
+import { format as formatDate } from "date-fns";
 import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
 
@@ -15,4 +16,8 @@ export function toTitleCase(input: string) {
 
 export function toastGenericError() {
   toast.error("Something went wrong. Try again later.");
+}
+
+export function formatDateUsersTimezone(date: Date) {
+  return formatDate(date, "dd/MM/yyyy (p)");
 }

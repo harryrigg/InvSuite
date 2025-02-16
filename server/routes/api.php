@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdjustmentController;
 use App\Http\Controllers\InventoryItemController;
+use App\Http\Controllers\PurchaseOrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,4 +23,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('', [AdjustmentController::class, 'index']);
         Route::post('', [AdjustmentController::class, 'store']);
     });
+
+    // Purchase Orders
+    Route::get('purchase-order', [PurchaseOrderController::class, 'index']);
+    Route::get('purchase-order/{purchaseOrder}', [PurchaseOrderController::class, 'show']);
+    Route::delete('purchase-order/{purchaseOrder}', [PurchaseOrderController::class, 'destroy']);
+    Route::post('purchase-order', [PurchaseOrderController::class, 'store']);
 });
