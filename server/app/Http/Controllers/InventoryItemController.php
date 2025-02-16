@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\InventoryItemRequest;
+use App\Http\Resources\InventoryItemResource;
 use App\Models\InventoryItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -13,21 +14,23 @@ class InventoryItemController extends Controller
 {
     public function index(Request $request)
     {
-        return $request->user()->inventoryItems()->orderBy('name', 'asc')->get();
+        $items = $request->user()->inventoryItems()->orderBy('name', 'asc')->get();
+
+        return InventoryItemResource::collection($items);
     }
 
     public function store(InventoryItemRequest $request)
     {
         $item = $request->user()->inventoryItems()->create($request->all());
 
-        return response()->json($item, 201);
+        return response()->json(new InventoryItemResource($item), 201);
     }
 
     public function show(InventoryItem $inventoryItem)
     {
         Gate::authorize('access-inventory-item', $inventoryItem);
 
-        return $inventoryItem;
+        return new InventoryItemResource($inventoryItem);
     }
 
     public function update(InventoryItemRequest $request, InventoryItem $inventoryItem)
@@ -36,7 +39,7 @@ class InventoryItemController extends Controller
 
         $inventoryItem->update($request->all());
 
-        return $inventoryItem;
+        return new InventoryItemResource($inventoryItem);
     }
 
     public function destroy(InventoryItem $inventoryItem)

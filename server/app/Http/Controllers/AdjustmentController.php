@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Aggregates\InventoryItemStockAggregate;
 use App\Exceptions\IllegalStockAdjustmentException;
 use App\Http\Requests\AdjustmentRequest;
+use App\Http\Resources\AdjustmentResource;
 use App\Models\InventoryItem;
 use Illuminate\Validation\ValidationException;
 
@@ -12,12 +13,14 @@ class AdjustmentController extends Controller
 {
     public function index(InventoryItem $inventoryItem)
     {
-        return $inventoryItem->adjustments()->latest()->orderBy('id', 'desc')->get();
+        $adjustments = $inventoryItem->adjustments()->latest()->orderBy('ulid', 'desc')->get();
+
+        return AdjustmentResource::collection($adjustments);
     }
 
     public function store(AdjustmentRequest $request, InventoryItem $inventoryItem)
     {
-        $aggregate = InventoryItemStockAggregate::retrieve($inventoryItem['uuid']);
+        $aggregate = InventoryItemStockAggregate::retrieve($inventoryItem->ulid);
         try {
             switch ($request['type']) {
                 case 'set':

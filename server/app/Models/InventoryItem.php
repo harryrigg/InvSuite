@@ -2,9 +2,8 @@
 
 namespace App\Models;
 
-use HasUuid;
+use HasUlid;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,7 +13,7 @@ class InventoryItem extends Model
 {
     /** @use HasFactory<\Database\Factories\InventoryItemFactory> */
     use HasFactory;
-    use HasUuid;
+    use HasUlid;
 
     protected $fillable = [
         'sku',
@@ -26,24 +25,10 @@ class InventoryItem extends Model
         'latest_adjustment_date'
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'id' => 'string'
-        ];
-    }
-
-    public static function booted()
-    {
-        static::creating(function ($model) {
-            $model->uuid = Str::uuid();
-        });
-    }
-
     protected function latestAdjustmentDate(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->adjustments()->latest()->orderBy('id', 'desc')->first()?->created_at
+            get: fn() => $this->adjustments()->latest()->orderBy('ulid', 'desc')->first()?->created_at
         );
     }
 

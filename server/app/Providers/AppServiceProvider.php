@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Http\Resources\Resource;
 use App\Models\InventoryItem;
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -24,6 +25,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Resource::withoutWrapping();
+
         ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
             return config('app.frontend_url') . "/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
         });

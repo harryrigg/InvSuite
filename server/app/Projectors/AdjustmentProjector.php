@@ -31,19 +31,19 @@ class AdjustmentProjector extends Projector
         $adjustment->writeable()->save();
     }
 
-    public function resetState(?string $aggregateUuid = null): void
+    public function resetState(?string $aggregateUlid = null): void
     {
-        if ($aggregateUuid === null) {
+        if ($aggregateUlid === null) {
             Adjustment::truncate();
         } else {
-            InventoryItem::findByUuid($aggregateUuid)->adjustments()->delete();
+            InventoryItem::findByUlid($aggregateUlid)->adjustments()->delete();
         }
     }
 
     private static function createAdjustment(ShouldBeStored&AdjustmentEvent $event, string $type): Adjustment
     {
         return new Adjustment([
-            'inventory_item_id' => InventoryItem::findByUuid($event->aggregateRootUuid())->id,
+            'inventory_item_id' => InventoryItem::findByUlid($event->aggregateRootUuid())->id,
             'created_at' => $event->createdAt(),
             'type' => $type,
             'amount' => $event->amount,

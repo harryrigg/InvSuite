@@ -113,7 +113,7 @@ class InventoryItemFactory extends Factory
                 'Transfer',
             ];
 
-            $aggregate = InventoryItemStockAggregate::retrieve($item['uuid']);
+            $aggregate = InventoryItemStockAggregate::retrieve($item->ulid);
             $totalCount = 0;
             for ($i = 0; $i < $count; $i++) {
                 $adjustmentType = rand(0, 9);

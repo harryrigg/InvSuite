@@ -14,12 +14,16 @@ return new class extends Migration
     {
         Schema::create('adjustments', function (Blueprint $table) {
             $table->id();
-            $table->timestamp('created_at');
+            $table->ulid()->unique();
+
             $table->foreignIdFor(InventoryItem::class);
+
             $table->enum('type', ['add', 'subtract', 'set']);
             $table->integer('amount');
             $table->integer('stock_count');
             $table->string('reason');
+
+            $table->timestamp('created_at');
         });
     }
 

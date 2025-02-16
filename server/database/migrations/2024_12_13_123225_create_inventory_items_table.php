@@ -16,13 +16,16 @@ return new class extends Migration
     {
         Schema::create('inventory_items', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
-            $table->uuid('uuid')->unique();
+            $table->ulid()->unique();
+
             $table->string('sku');
             $table->string('name');
             $table->text('description')->nullable()->default('');
             $table->integer('stock_count')->default(0);
+
             $table->foreignIdFor(User::class);
+
+            $table->timestamps();
         });
     }
 
