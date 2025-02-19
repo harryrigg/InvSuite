@@ -8,6 +8,7 @@ use App\Http\Resources\PurchaseOrderResource;
 use App\Models\InventoryItem;
 use App\Models\PurchaseOrder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class PurchaseOrderController extends Controller
 {
@@ -37,16 +38,22 @@ class PurchaseOrderController extends Controller
 
     public function show(PurchaseOrder $purchaseOrder)
     {
+        Gate::authorize('access-purchase-order', $purchaseOrder);
+
         return new PurchaseOrderResource($purchaseOrder);
     }
 
     public function destroy(PurchaseOrder $purchaseOrder)
     {
+        Gate::authorize('access-purchase-order', $purchaseOrder);
+
         $purchaseOrder->delete();
     }
 
     public function indexLines(PurchaseOrder $purchaseOrder)
     {
+        Gate::authorize('access-purchase-order', $purchaseOrder);
+
         return PurchaseOrderLineResource::collection($purchaseOrder->lines);
     }
 }

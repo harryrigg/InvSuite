@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Http\Resources\Resource;
 use App\Models\InventoryItem;
+use App\Models\PurchaseOrder;
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Gate;
@@ -35,6 +36,10 @@ class AppServiceProvider extends ServiceProvider
 
         Gate::define('access-inventory-item', function (User $user, InventoryItem $inventoryItem) {
             return $inventoryItem->user->is($user);
+        });
+
+        Gate::define('access-purchase-order', function (User $user, PurchaseOrder $purchaseOrder) {
+            return $purchaseOrder->user->is($user);
         });
     }
 }
