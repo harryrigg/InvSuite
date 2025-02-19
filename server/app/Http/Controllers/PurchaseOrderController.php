@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PurchaseOrderRequest;
+use App\Http\Resources\PurchaseOrderLineResource;
 use App\Http\Resources\PurchaseOrderResource;
 use App\Models\InventoryItem;
 use App\Models\PurchaseOrder;
@@ -42,5 +43,10 @@ class PurchaseOrderController extends Controller
     public function destroy(PurchaseOrder $purchaseOrder)
     {
         $purchaseOrder->delete();
+    }
+
+    public function indexLines(PurchaseOrder $purchaseOrder)
+    {
+        return PurchaseOrderLineResource::collection($purchaseOrder->lines);
     }
 }

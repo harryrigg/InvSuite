@@ -29,4 +29,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('purchase-order/{purchaseOrder}', [PurchaseOrderController::class, 'show']);
     Route::delete('purchase-order/{purchaseOrder}', [PurchaseOrderController::class, 'destroy']);
     Route::post('purchase-order', [PurchaseOrderController::class, 'store']);
+    Route::get('purchase-order/{purchaseOrder}/lines', [PurchaseOrderController::class, 'indexLines']);
 });

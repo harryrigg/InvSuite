@@ -20,7 +20,8 @@ import Loader from "@/components/loader";
 import { PageCardContainer } from "@/components/page-card";
 import { LinkButton } from "@/components/ui/button";
 
-import DetailsSection from "./details-section";
+import DetailsSection from "./_components/details-section";
+import LinesSection from "./_components/lines-section";
 
 export default function Load() {
   const id = useParams<{ id: string }>().id;
@@ -76,6 +77,7 @@ function Page({ purchaseOrder }: PageProps) {
       </InternalHeader>
       <PageCardContainer>
         <DetailsSection purchaseOrder={purchaseOrder} />
+        <LinesSection purchaseOrder={purchaseOrder} />
       </PageCardContainer>
     </>
   );
