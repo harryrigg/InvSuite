@@ -27,16 +27,33 @@ export type PurchaseOrderAPI = {
   id: string;
   reference: string;
   supplier: string;
-  fulfilled_at: string | null;
+
+  ordered_at: string | null;
+  received_at: string | null;
+  cancelled_at: string | null;
+  status: PurchaseOrderStatus;
+
   created_at: string;
 };
+
+export type PurchaseOrderStatus =
+  | "draft"
+  | "ordered"
+  | "received"
+  | "cancelled";
 
 export class PurchaseOrder {
   constructor(
     readonly id: string,
+
     readonly reference: string,
     readonly supplier: string,
-    readonly fulfilled_at: Date | null,
+
+    readonly ordered_at: Date | null,
+    readonly received_at: Date | null,
+    readonly cancelled_at: Date | null,
+    readonly status: PurchaseOrderStatus,
+
     readonly created_at: Date,
   ) {}
 
@@ -48,9 +65,16 @@ export class PurchaseOrder {
 export function transformPurchaseOrder(item: PurchaseOrderAPI): PurchaseOrder {
   return new PurchaseOrder(
     item.id,
+
     item.reference,
     item.supplier,
-    item.fulfilled_at ? new Date(item.fulfilled_at) : null,
+
+    item.ordered_at ? new Date(item.ordered_at) : null,
+    item.received_at ? new Date(item.received_at) : null,
+    item.cancelled_at ? new Date(item.cancelled_at) : null,
+
+    item.status,
+
     new Date(item.created_at),
   );
 }

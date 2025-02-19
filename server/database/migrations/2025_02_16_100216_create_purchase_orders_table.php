@@ -19,7 +19,9 @@ return new class extends Migration
             $table->string('reference')->unique();
             $table->string('supplier');
 
-            $table->timestamp('fulfilled_at')->nullable();
+            $table->timestamp('ordered_at')->nullable();
+            $table->timestamp('received_at')->nullable();
+            $table->timestamp('cancelled_at')->nullable();
 
             $table->foreignIdFor(User::class);
 

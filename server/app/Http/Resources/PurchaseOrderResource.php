@@ -18,9 +18,16 @@ class PurchaseOrderResource extends Resource
     {
         return [
             'id' => $this->ulid,
+
             'reference' => $this->reference,
             'supplier' => $this->supplier,
-            'fulfilled_at' => $this->fulfilled_at,
+
+            'ordered_at' => $this->ordered_at,
+            'received_at' => $this->received_at,
+            'cancelled_at' => $this->cancelled_at,
+
+            'status' => $this->status,
+
             'created_at' => $this->created_at,
         ];
     }

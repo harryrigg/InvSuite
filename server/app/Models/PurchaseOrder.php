@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\PurchaseOrderStatus;
 use Carbon\CarbonImmutable;
 use HasUlid;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,11 +13,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 
 /**
+ * Database Attributes
  * @property string $reference
  * @property string $supplier
  * 
- * @property ?CarbonImmutable $fulfilled_at
+ * @property ?CarbonImmutable $ordered_at
+ * @property ?CarbonImmutable $received_at
+ * @property ?CarbonImmutable $cancelled_at
  * 
+ * Computed Attributes
+ * @property-read PurchaseOrderStatus $status
+ * 
+ * Relations
  * @property-read User $user
  * @property-read Collection<int,PurchaseOrderLine> $lines
  */
@@ -30,7 +39,9 @@ class PurchaseOrder extends Model
     protected function casts(): array
     {
         return [
-            'fulfilled_at' => 'immutable_datetime',
+            'ordered_at' => 'immutable_datetime',
+            'received_at' => 'immutable_datetime',
+            'cancelled_at' => 'immutable_datetime',
         ];
     }
 
@@ -41,6 +52,18 @@ class PurchaseOrder extends Model
                 $nextReference = static::getNextReference($purchaseOrder->user);
                 $purchaseOrder->reference = $nextReference;
             }
+        });
+    }
+
+    protected function status(): Attribute
+    {
+        return Attribute::make(function () {
+            return match (true) {
+                $this->cancelled_at !== null => PurchaseOrderStatus::Cancelled,
+                $this->received_at !== null => PurchaseOrderStatus::Received,
+                $this->ordered_at !== null => PurchaseOrderStatus::Ordered,
+                default => PurchaseOrderStatus::Draft,
+            };
         });
     }
 

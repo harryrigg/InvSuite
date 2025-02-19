@@ -14,7 +14,7 @@ import { useState } from "react";
 
 import { Adjustment } from "@/lib/types/adjustment";
 import { InventoryItem } from "@/lib/types/inventory";
-import { cn, toTitleCase } from "@/lib/utils";
+import { toTitleCase } from "@/lib/utils";
 
 import { useFetchInventoryItemAdjustmentList } from "@/hooks/queries/inventory/adjustment/fetch-list";
 
@@ -123,21 +123,13 @@ interface TypeBadgeProps {
 
 function TypeBadge({ type }: TypeBadgeProps) {
   const variants = {
-    add: "status-positive",
-    subtract: "status-negative",
-    set: "status-neutral",
+    add: "positive",
+    subtract: "negative",
+    set: "neutral",
   } as const;
 
   return (
-    <Badge variant={variants[type]} className="gap-1.5">
-      <span
-        className={cn(
-          "size-1 rounded-full",
-          type === "add" && "bg-green-600",
-          type === "subtract" && "bg-red-600",
-          type === "set" && "bg-gray-600",
-        )}
-      />
+    <Badge variant={variants[type]} bubble>
       {toTitleCase(type)}
     </Badge>
   );

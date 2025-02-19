@@ -20,6 +20,7 @@ import { formatDateUsersTimezone } from "@/lib/utils";
 import { useFetchPurchaseOrderList } from "@/hooks/queries/purchase-order/fetch-list";
 
 import { FilterInput } from "@/components/filter-input";
+import { PurchaseOrderStatusBadge } from "@/components/purchase-order";
 import { DataTable } from "@/components/table/data-table";
 import { Pagination } from "@/components/table/pagination";
 import { SortHeader } from "@/components/table/sort-header";
@@ -38,6 +39,10 @@ const columns = [
         {row.original.referenceFormatted()}
       </Link>
     ),
+  }),
+  columnHelper.accessor("status", {
+    header: "Status",
+    cell: ({ getValue }) => <PurchaseOrderStatusBadge status={getValue()} />,
   }),
   columnHelper.accessor("supplier", {
     header: ({ column }) => <SortHeader title="Supplier" column={column} />,
