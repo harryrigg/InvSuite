@@ -10,3 +10,8 @@ export type ValidationErrorData<T> = {
   message: string;
   errors: Record<keyof T, string[]>;
 };
+
+export type Option = {
+  label: string;
+  value: string;
+};

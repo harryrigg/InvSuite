@@ -1,6 +1,7 @@
 "use client";
 
 import { Table as TableState, flexRender } from "@tanstack/react-table";
+import { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -15,10 +16,15 @@ import {
 
 interface Props<TData> {
   table: TableState<TData>;
+  noResults?: ReactNode;
   className?: string;
 }
 
-export function DataTable<TData>({ table, className }: Props<TData>) {
+export function DataTable<TData>({
+  table,
+  noResults = "No results",
+  className,
+}: Props<TData>) {
   return (
     <div className={cn("overflow-hidden rounded-md border", className)}>
       <Table>
@@ -75,7 +81,7 @@ export function DataTable<TData>({ table, className }: Props<TData>) {
                 colSpan={table.getAllColumns().length}
                 className="h-24 text-center"
               >
-                No results.
+                {noResults}
               </TableCell>
             </TableRow>
           )}

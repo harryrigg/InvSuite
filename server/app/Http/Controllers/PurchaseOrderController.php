@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PurchaseOrderRequest;
-use App\Http\Resources\InventoryItemResource;
 use App\Http\Resources\PurchaseOrderResource;
+use App\Models\InventoryItem;
 use App\Models\PurchaseOrder;
 use Illuminate\Http\Request;
 
@@ -19,7 +19,17 @@ class PurchaseOrderController extends Controller
 
     public function store(PurchaseOrderRequest $request)
     {
-        $purchaseOrder = $request->user()->purchaseOrders()->create($request->all());
+        $purchaseOrder = $request->user()
+            ->purchaseOrders()
+            ->create($request->except(['lines']));
+
+        $purchaseOrder->lines()->createMany(array_map(function ($line) {
+            $item = InventoryItem::findByUlid($line['item_id']);
+            return [
+                ...$line,
+                'item_id' => $item->id,
+            ];
+        }, $request->lines));
 
         return response()->json(new PurchaseOrderResource($purchaseOrder), 201);
     }

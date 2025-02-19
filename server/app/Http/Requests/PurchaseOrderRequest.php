@@ -27,6 +27,21 @@ class PurchaseOrderRequest extends FormRequest
                 'min:1',
                 'max:255'
             ],
+            'lines' => [
+                'required',
+                'array',
+                'min:1'
+            ],
+            'lines.*.item_id' => [
+                'required',
+                'string',
+                'exists:inventory_items,ulid',
+            ],
+            'lines.*.quantity' => [
+                'required',
+                'integer',
+                'min:1',
+            ]
         ];
     }
 }

@@ -26,14 +26,16 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('purchase_order_items', function (Blueprint $table) {
+        Schema::create('purchase_order_lines', function (Blueprint $table) {
             $table->id();
             $table->ulid()->unique();
 
             $table->foreignIdFor(App\Models\PurchaseOrder::class);
-            $table->foreignIdFor(App\Models\InventoryItem::class);
+            $table->foreignIdFor(App\Models\InventoryItem::class, 'item_id');
 
             $table->integer('quantity');
+
+            $table->timestamps();
         });
 
         Schema::create('purchase_order_reference_counter', function (Blueprint $table) {

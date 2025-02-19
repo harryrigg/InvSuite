@@ -7,6 +7,7 @@ use HasUlid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\DB;
  * @property ?CarbonImmutable $fulfilled_at
  * 
  * @property-read User $user
+ * @property-read Collection<int,PurchaseOrderLine> $lines
  */
 class PurchaseOrder extends Model
 {
@@ -48,6 +50,14 @@ class PurchaseOrder extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * @return HasMany<PurchaseOrderLine,$this>
+     */
+    public function lines(): HasMany
+    {
+        return $this->hasMany(PurchaseOrderLine::class);
     }
 
     protected static function getNextReference(User $user): string

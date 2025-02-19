@@ -11,6 +11,14 @@ export const createSchema = z.object({
         .max(16),
     ),
   supplier: z.string().min(1).max(255),
+  lines: z
+    .array(
+      z.object({
+        item_id: z.string(),
+        quantity: z.number().int().min(1),
+      }),
+    )
+    .min(1),
 });
 
 export type CreatePurchaseOrder = z.infer<typeof createSchema>;

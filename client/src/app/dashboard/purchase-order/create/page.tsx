@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { CreatePurchaseOrder, createSchema } from "@/lib/types/purchase-order";
@@ -13,6 +13,7 @@ import { AppBreadcrumbs } from "@/components/app-breadcrumbs";
 import { InternalHeader } from "@/components/internal-header";
 import {
   PageCard,
+  PageCardDivider,
   PageCardFooter,
   PageCardHeader,
 } from "@/components/page-card";
@@ -28,6 +29,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
+import LineTable from "./_components/line-table";
+
 export default function Page() {
   const router = useRouter();
 
@@ -36,6 +39,7 @@ export default function Page() {
     defaultValues: {
       reference: "",
       supplier: "",
+      lines: [],
     },
   });
 
@@ -91,6 +95,14 @@ export default function Page() {
                 )}
               />
             </div>
+            <PageCardDivider />
+            <Controller
+              name="lines"
+              control={form.control}
+              render={({ field }) => (
+                <LineTable data={field.value} onChange={field.onChange} />
+              )}
+            />
             <PageCardFooter>
               <LinkButton
                 variant="outline"
@@ -99,7 +111,11 @@ export default function Page() {
               >
                 Cancel
               </LinkButton>
-              <Button type="submit" size="sm">
+              <Button
+                type="submit"
+                size="sm"
+                disabled={form.formState.isSubmitting}
+              >
                 Create
               </Button>
             </PageCardFooter>
