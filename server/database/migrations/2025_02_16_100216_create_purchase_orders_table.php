@@ -37,6 +37,8 @@ return new class extends Migration
 
             $table->integer('quantity');
 
+            $table->integer('received_quantity')->nullable();
+
             $table->timestamps();
         });
 

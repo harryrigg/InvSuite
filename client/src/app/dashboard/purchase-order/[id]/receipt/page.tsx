@@ -1,35 +1,42 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import { notFound, useParams, useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import {
-  PurchaseOrder,
-  UpdatePurchaseOrder,
-  updateSchema,
-} from "@/lib/types/purchase-order";
+import { PurchaseOrder } from "@/lib/types/purchase-order";
 import { PurchaseOrderLine } from "@/lib/types/purchase-order-line";
 
 import { useFetchPurchaseOrder } from "@/hooks/queries/purchase-order/fetch";
 import { useFetchPurchaseOrderLineList } from "@/hooks/queries/purchase-order/lines/fetch-list";
-import { useUpdatePurchaseOrder } from "@/hooks/queries/purchase-order/update";
+import { useReceiptPurchaseOrder } from "@/hooks/queries/purchase-order/receipt";
 
 import { AppBreadcrumbs } from "@/components/app-breadcrumbs";
-import TextField from "@/components/fields/text-field";
 import { InternalHeader } from "@/components/internal-header";
 import Loader from "@/components/loader";
 import {
   PageCard,
-  PageCardDivider,
   PageCardFooter,
   PageCardHeader,
 } from "@/components/page-card";
-import PurchaseOrderLineEditTable from "@/components/purchase-order/line-edit-table";
+import { PurchaseOrderStatusBadge } from "@/components/purchase-order/status-badge";
 import { Button, LinkButton } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
+
+import ReceiptTable from "./_components/receipt-table";
+
+export type ReceiptLine = {
+  item_id: string;
+  item_sku: string;
+  item_name: string;
+  original_quantity: number;
+  quantity: number;
+};
+
+interface FormValues {
+  lines: ReceiptLine[];
+}
 
 export default function Load() {
   const id = useParams<{ id: string }>().id;
@@ -49,11 +56,8 @@ export default function Load() {
     notFound();
   } else if (purchaseOrderPending || linesPending) {
     return <Loader />;
-  } else if (
-    purchaseOrder.received_at !== null ||
-    purchaseOrder.cancelled_at !== null
-  ) {
-    notFound();
+  } else if (purchaseOrder.status !== "ordered") {
+    return notFound();
   } else {
     return <Page purchaseOrder={purchaseOrder} lines={lines} />;
   }
@@ -77,55 +81,63 @@ function Page({ purchaseOrder, lines }: PageProps) {
     [lines],
   );
 
-  const form = useForm<UpdatePurchaseOrder>({
-    resolver: zodResolver(updateSchema),
+  const form = useForm<FormValues>({
     defaultValues: {
-      supplier: purchaseOrder.supplier,
       lines: defaultLines,
     },
   });
 
-  const { mutate } = useUpdatePurchaseOrder({
+  const { mutate } = useReceiptPurchaseOrder({
     id: purchaseOrder.id,
-    form,
     onSuccess: () => {
-      toast.success("Purchase order updated");
+      toast.success("Purchase order receipted and marked as received");
       router.push(parentHref);
     },
   });
 
-  const onSubmit = (values: UpdatePurchaseOrder) => {
-    mutate(values);
+  const receiptInputLines = form.watch("lines");
+  const receiptLines = useMemo(
+    () =>
+      receiptInputLines.map((v, idx) => ({
+        ...v,
+        item_name: lines[idx].item_name,
+        item_sku: lines[idx].item_sku,
+        original_quantity: lines[idx].quantity,
+      })),
+    [receiptInputLines],
+  );
+
+  const onSubmit = (values: FormValues) => {
+    const adjustedLines = values.lines
+      .map((v, idx) => ({ idx, ...v }))
+      .filter((v) => v.quantity !== lines[v.idx].quantity)
+      .map((v) => ({ index: v.idx, quantity: v.quantity }));
+
+    mutate({ adjusted_lines: adjustedLines });
   };
 
   return (
     <>
       <InternalHeader>
-        <AppBreadcrumbs page="Edit" />
+        <AppBreadcrumbs page="Receipt In" />
       </InternalHeader>
       <PageCard>
         <PageCardHeader
-          title={purchaseOrder.referenceFormatted()}
-          subTitle="Edit Details"
+          title="Receipt Purchase Order"
+          subTitle={
+            <span className="flex items-center gap-2 mt-1">
+              {purchaseOrder.referenceFormatted()}
+              <PurchaseOrderStatusBadge status={purchaseOrder.status} />
+            </span>
+          }
         />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="space-y-4">
-              <TextField
-                name="supplier"
-                label="Supplier"
-                placeholder="123456"
-              />
-            </div>
-            <PageCardDivider />
             <Controller
               name="lines"
               control={form.control}
               render={({ field }) => (
-                <PurchaseOrderLineEditTable
-                  data={field.value}
-                  onChange={field.onChange}
-                />
+                <ReceiptTable data={receiptLines} onChange={field.onChange} />
               )}
             />
             <PageCardFooter>
@@ -137,7 +149,7 @@ function Page({ purchaseOrder, lines }: PageProps) {
                 size="sm"
                 disabled={form.formState.isSubmitting}
               >
-                Update
+                Receipt In
               </Button>
             </PageCardFooter>
           </form>

@@ -23,6 +23,7 @@ class PurchaseOrderLineResource extends Resource
             'item_sku' => $this->item->sku,
             'item_name' => $this->item->name,
             'quantity' => $this->quantity,
+            ...($this->purchaseOrder->received_at !== null ? ['received_quantity' => $this->received_quantity] : []),
         ];
     }
 }

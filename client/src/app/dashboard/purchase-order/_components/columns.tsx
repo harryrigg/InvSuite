@@ -16,7 +16,7 @@ export const columns = [
     cell: ({ row }) => (
       <Link
         href={`/dashboard/purchase-order/${row.original.id}`}
-        className="underline"
+        className="underline whitespace-nowrap"
       >
         {row.original.referenceFormatted()}
       </Link>

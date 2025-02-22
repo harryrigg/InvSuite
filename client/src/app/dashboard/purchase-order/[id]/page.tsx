@@ -64,6 +64,10 @@ function Page({ purchaseOrder }: PageProps) {
           <LinkButton
             size="xs"
             href={`/dashboard/purchase-order/${purchaseOrder.id}/edit`}
+            disabled={
+              purchaseOrder.received_at !== null ||
+              purchaseOrder.cancelled_at !== null
+            }
           >
             <SquarePen /> Edit Details
           </LinkButton>

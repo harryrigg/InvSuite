@@ -9,13 +9,15 @@ import { Button } from "@/components/ui/button";
 interface Props<TData> {
   table: Table<TData>;
   row: Row<TData>;
-  schema: z.ZodSchema<TData>;
+  schema: z.ZodSchema<unknown>;
+  allowDelete?: boolean;
 }
 
 export function EditableTableActionCell<TData>({
   table,
   row,
   schema,
+  allowDelete = true,
 }: Props<TData>) {
   const meta = table.options.meta as EditableTableMeta<TData>;
 
@@ -92,9 +94,16 @@ export function EditableTableActionCell<TData>({
         </>
       ) : (
         <>
-          <Button size="icon" variant="ghost" onClick={onDelete} type="button">
-            <Trash2Icon />
-          </Button>
+          {allowDelete && (
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={onDelete}
+              type="button"
+            >
+              <Trash2Icon />
+            </Button>
+          )}
           <Button size="icon" variant="ghost" onClick={onEdit} type="button">
             <PencilIcon />
           </Button>

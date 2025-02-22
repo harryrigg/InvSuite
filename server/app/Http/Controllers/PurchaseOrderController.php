@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreatePurchaseOrderRequest;
+use App\Http\Requests\ReceiptPurchaseOrderRequest;
 use App\Http\Requests\UpdatePurchaseOrderRequest;
 use App\Http\Resources\PurchaseOrderLineResource;
 use App\Http\Resources\PurchaseOrderResource;
@@ -49,6 +50,10 @@ class PurchaseOrderController extends Controller
     {
         Gate::authorize('access-purchase-order', $purchaseOrder);
 
+        if ($purchaseOrder->received_at !== null || $purchaseOrder->cancelled_at !== null) {
+            abort(400, 'Purchase order cannot be updated after it is received or cancelled');
+        }
+
         $purchaseOrder->update($request->except(['lines']));
         $purchaseOrder->lines()->delete();
         $purchaseOrder->lines()->createMany(array_map(function ($line) {
@@ -78,6 +83,32 @@ class PurchaseOrderController extends Controller
         }
 
         $purchaseOrder->update(['ordered_at' => now()]);
+    }
+
+    public function receipt(ReceiptPurchaseOrderRequest $request, PurchaseOrder $purchaseOrder)
+    {
+        Gate::authorize('access-purchase-order', $purchaseOrder);
+
+        if ($purchaseOrder->status !== PurchaseOrderStatus::Ordered) {
+            abort(400, "Purchase order is not in ordered status");
+        }
+
+        $adjustedLines = collect($request->adjusted_lines ?? []);
+
+        $purchaseOrder->lines->each(function ($line, $index) use ($adjustedLines) {
+            $receivedQuantity = $line->quantity;
+
+            $adjustment = $adjustedLines->first(fn($adjustedLine) => $adjustedLine['index'] === $index);
+            if ($adjustment !== null) {
+                $receivedQuantity = $adjustment['quantity'];
+            }
+
+            $line->update(['received_quantity' => $receivedQuantity]);
+        });
+
+        $purchaseOrder->update(['received_at' => now()]);
+
+        return PurchaseOrderResource::make($purchaseOrder);
     }
 
     public function cancel(PurchaseOrder $purchaseOrder)

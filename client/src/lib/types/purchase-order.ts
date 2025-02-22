@@ -26,6 +26,12 @@ export const createSchema = updateSchema.extend({
 
 export type CreatePurchaseOrder = z.infer<typeof createSchema>;
 export type UpdatePurchaseOrder = z.infer<typeof updateSchema>;
+export type ReceiptPurchaseOrder = {
+  adjusted_lines: {
+    index: number;
+    quantity: number;
+  }[];
+};
 
 export type PurchaseOrderAPI = {
   id: string;
@@ -63,6 +69,10 @@ export class PurchaseOrder {
 
   public referenceFormatted(): string {
     return `PO-${this.reference}`;
+  }
+
+  public hasBeenReceived(): boolean {
+    return this.received_at !== null;
   }
 }
 

@@ -5,6 +5,7 @@ export type PurchaseOrderLineAPI = {
   item_sku: string;
   item_name: string;
   quantity: number;
+  received_quantity?: number;
 };
 
 export class PurchaseOrderLine {
@@ -15,6 +16,7 @@ export class PurchaseOrderLine {
     readonly item_sku: string,
     readonly item_name: string,
     readonly quantity: number,
+    readonly received_quantity?: number,
   ) {}
 }
 
@@ -28,5 +30,6 @@ export function transformPurchaseOrderLine(
     item.item_sku,
     item.item_name,
     item.quantity,
+    item.received_quantity,
   );
 }

@@ -4,7 +4,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { PurchaseOrder } from "@/lib/types/purchase-order";
 
@@ -13,7 +13,7 @@ import { useFetchPurchaseOrderLineList } from "@/hooks/queries/purchase-order/li
 import { DataTable } from "@/components/table/data-table";
 import { Pagination } from "@/components/table/pagination";
 
-import { columns } from "./lines-table-columns";
+import { createColumns } from "./lines-table-columns";
 
 interface Props {
   purchaseOrder: PurchaseOrder;
@@ -28,6 +28,8 @@ export default function LinesTable({ purchaseOrder }: Props) {
     pageIndex: 0,
     pageSize: 15,
   });
+
+  const columns = useMemo(() => createColumns(purchaseOrder), [purchaseOrder]);
 
   const table = useReactTable({
     columns,

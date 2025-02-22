@@ -63,12 +63,25 @@ type LinkButtonProps = {
   href: string;
 } & Omit<ButtonProps, "asChild">;
 
-const LinkButton = ({ href, children, ...props }: LinkButtonProps) => {
-  return (
-    <Button {...props} asChild>
-      <Link href={href}>{children}</Link>
-    </Button>
-  );
+const LinkButton = ({
+  href,
+  children,
+  disabled,
+  ...props
+}: LinkButtonProps) => {
+  if (disabled) {
+    return (
+      <Button {...props} disabled>
+        {children}
+      </Button>
+    );
+  } else {
+    return (
+      <Button {...props} asChild>
+        <Link href={href}>{children}</Link>
+      </Button>
+    );
+  }
 };
 LinkButton.displayName = "LinkButton";
 

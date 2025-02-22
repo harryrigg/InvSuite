@@ -1,4 +1,9 @@
-import { BanIcon, CircleCheckBig, LucideIcon } from "lucide-react";
+import {
+  BanIcon,
+  CircleCheckBig,
+  LucideIcon,
+  PackageCheckIcon,
+} from "lucide-react";
 import { ButtonHTMLAttributes, ReactNode } from "react";
 import { toast } from "sonner";
 
@@ -9,7 +14,7 @@ import { useMarkPurchaseOrderOrdered } from "@/hooks/queries/purchase-order/mark
 
 import ConfirmDialog from "@/components/confirm-dialog";
 import { PageCard, PageCardHeader } from "@/components/page-card";
-import { Button } from "@/components/ui/button";
+import { Button, LinkButton } from "@/components/ui/button";
 
 interface Props {
   purchaseOrder: PurchaseOrder;
@@ -38,6 +43,14 @@ export default function ActionsSection({ purchaseOrder }: Props) {
             <ActionButton icon={CircleCheckBig}>Mark as Ordered</ActionButton>
           </ConfirmDialog>
         )}
+        {purchaseOrder.status === "ordered" && (
+          <ActionLinkButton
+            icon={PackageCheckIcon}
+            href={`/dashboard/purchase-order/${purchaseOrder.id}/receipt`}
+          >
+            Receipt In
+          </ActionLinkButton>
+        )}
         {purchaseOrder.status !== "cancelled" && (
           <ConfirmDialog
             description="This will cancel the purchase order."
@@ -64,5 +77,19 @@ function ActionButton({ icon: Icon, children, ...props }: ActionButtonProps) {
       <Icon className="size-4" />
       {children}
     </Button>
+  );
+}
+
+function ActionLinkButton({
+  icon: Icon,
+  children,
+  href,
+  ...props
+}: ActionButtonProps & { href: string }) {
+  return (
+    <LinkButton variant="outline" href={href} {...props}>
+      <Icon className="size-4" />
+      {children}
+    </LinkButton>
   );
 }

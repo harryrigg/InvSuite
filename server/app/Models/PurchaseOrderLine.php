@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $quantity
+ * @property ?int $received_quantity
  * 
  * @property-read PurchaseOrder $purchaseOrder
  * @property-read InventoryItem $item
