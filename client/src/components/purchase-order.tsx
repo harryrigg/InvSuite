@@ -5,10 +5,12 @@ import { Badge } from "@/components/ui/badge";
 
 interface PurchaseOrderStatusBadgeProps {
   status: PurchaseOrderStatus;
+  bubble?: boolean;
 }
 
 export function PurchaseOrderStatusBadge({
   status,
+  bubble = true,
 }: PurchaseOrderStatusBadgeProps) {
   const variants = {
     draft: "draft",
@@ -18,7 +20,7 @@ export function PurchaseOrderStatusBadge({
   } as const;
 
   return (
-    <Badge variant={variants[status]} bubble>
+    <Badge variant={variants[status]} bubble={bubble}>
       {toTitleCase(status)}
     </Badge>
   );

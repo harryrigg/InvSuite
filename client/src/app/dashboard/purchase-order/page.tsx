@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ColumnFiltersState,
   PaginationState,
   SortingState,
   createColumnHelper,
@@ -21,6 +22,7 @@ import { useFetchPurchaseOrderList } from "@/hooks/queries/purchase-order/fetch-
 
 import { FilterInput } from "@/components/filter-input";
 import { PurchaseOrderStatusBadge } from "@/components/purchase-order";
+import ColumnFilter, { FilterColumn } from "@/components/table/column-filter";
 import { DataTable } from "@/components/table/data-table";
 import { Pagination } from "@/components/table/pagination";
 import { SortHeader } from "@/components/table/sort-header";
@@ -43,6 +45,7 @@ const columns = [
   columnHelper.accessor("status", {
     header: "Status",
     cell: ({ getValue }) => <PurchaseOrderStatusBadge status={getValue()} />,
+    filterFn: "arrIncludesSome",
   }),
   columnHelper.accessor("supplier", {
     header: ({ column }) => <SortHeader title="Supplier" column={column} />,
@@ -55,13 +58,48 @@ const columns = [
   }),
 ];
 
+const filterColumns = [
+  {
+    label: "Status",
+    id: "status",
+    type: "select",
+    options: [
+      {
+        label: <PurchaseOrderStatusBadge status="draft" bubble={false} />,
+        value: "draft",
+      },
+      {
+        label: <PurchaseOrderStatusBadge status="ordered" bubble={false} />,
+        value: "ordered",
+      },
+      {
+        label: <PurchaseOrderStatusBadge status="received" bubble={false} />,
+        value: "received",
+      },
+      {
+        label: <PurchaseOrderStatusBadge status="cancelled" bubble={false} />,
+        value: "cancelled",
+      },
+    ],
+  },
+] satisfies FilterColumn[];
+
 export default function Page() {
   const { data } = useFetchPurchaseOrderList();
 
   const [sorting, setSorting] = useState<SortingState>([
     { id: "supplier", desc: false },
   ]);
-  const [filter, setFilter] = useState("");
+
+  const [globalFilter, setGlobalFilter] = useState("");
+
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
+    {
+      id: "status",
+      value: ["draft", "ordered", "received"],
+    },
+  ]);
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 15,
@@ -72,12 +110,16 @@ export default function Page() {
     columns,
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
+
     getFilteredRowModel: getFilteredRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+
     getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: setPagination,
     state: {
       pagination,
-      globalFilter: filter,
+      columnFilters,
+      globalFilter,
       sorting,
     },
     getCoreRowModel: getCoreRowModel(),
@@ -85,13 +127,22 @@ export default function Page() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-between">
+      <div className="flex gap-2">
         <FilterInput
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
+          value={globalFilter}
+          onChange={(e) => setGlobalFilter(e.target.value)}
           className="h-9 max-w-96"
         />
-        <LinkButton size="sm" href="/dashboard/purchase-order/create">
+        <ColumnFilter
+          columns={filterColumns}
+          state={columnFilters}
+          setState={setColumnFilters}
+        />
+        <LinkButton
+          size="sm"
+          href="/dashboard/purchase-order/create"
+          className="ml-auto"
+        >
           <Plus /> New Purchase Order
         </LinkButton>
       </div>
