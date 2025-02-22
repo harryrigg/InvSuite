@@ -3,15 +3,12 @@ import { toTitleCase } from "@/lib/utils";
 
 import { Badge } from "@/components/ui/badge";
 
-interface PurchaseOrderStatusBadgeProps {
+interface Props {
   status: PurchaseOrderStatus;
   bubble?: boolean;
 }
 
-export function PurchaseOrderStatusBadge({
-  status,
-  bubble = true,
-}: PurchaseOrderStatusBadgeProps) {
+export function PurchaseOrderStatusBadge({ status, bubble = true }: Props) {
   const variants = {
     draft: "draft",
     ordered: "secondary",

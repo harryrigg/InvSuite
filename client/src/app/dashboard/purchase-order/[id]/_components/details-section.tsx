@@ -2,7 +2,7 @@ import { PurchaseOrder } from "@/lib/types/purchase-order";
 
 import { Detail, DetailColumn, DetailRow } from "@/components/detail";
 import { PageCard, PageCardHeader } from "@/components/page-card";
-import { PurchaseOrderStatusBadge } from "@/components/purchase-order";
+import { PurchaseOrderStatusBadge } from "@/components/purchase-order/status-badge";
 
 interface Props {
   purchaseOrder: PurchaseOrder;

@@ -13,7 +13,7 @@ interface Args {
 
 export function useFetchPurchaseOrderLineList({ purchaseOrderId }: Args) {
   return useQuery<PurchaseOrderLine[]>({
-    queryKey: ["purchase-order-line"],
+    queryKey: ["purchase-order", purchaseOrderId, "lines"],
     queryFn: () =>
       api
         .get<

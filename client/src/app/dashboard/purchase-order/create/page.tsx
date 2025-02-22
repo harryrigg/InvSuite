@@ -18,10 +18,9 @@ import {
   PageCardFooter,
   PageCardHeader,
 } from "@/components/page-card";
+import PurchaseOrderLineEditTable from "@/components/purchase-order/line-edit-table";
 import { Button, LinkButton } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-
-import LineTable from "./_components/line-table";
 
 export default function Page() {
   const router = useRouter();
@@ -70,7 +69,10 @@ export default function Page() {
               name="lines"
               control={form.control}
               render={({ field }) => (
-                <LineTable data={field.value} onChange={field.onChange} />
+                <PurchaseOrderLineEditTable
+                  data={field.value}
+                  onChange={field.onChange}
+                />
               )}
             />
             <PageCardFooter>

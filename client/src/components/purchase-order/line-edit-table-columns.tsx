@@ -9,7 +9,7 @@ import {
   EditableSelectCell,
 } from "@/components/table/editable-cells";
 
-import { LineItem, lineItemSchema } from "./line-table";
+import { LineItem, lineItemSchema } from "./line-edit-table";
 
 const helper = createColumnHelper<LineItem>();
 

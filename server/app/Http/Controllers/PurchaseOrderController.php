@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\PurchaseOrderRequest;
+use App\Http\Requests\CreatePurchaseOrderRequest;
+use App\Http\Requests\UpdatePurchaseOrderRequest;
 use App\Http\Resources\PurchaseOrderLineResource;
 use App\Http\Resources\PurchaseOrderResource;
 use App\Models\InventoryItem;
@@ -19,7 +20,7 @@ class PurchaseOrderController extends Controller
         return PurchaseOrderResource::collection($purchaseOrders);
     }
 
-    public function store(PurchaseOrderRequest $request)
+    public function store(CreatePurchaseOrderRequest $request)
     {
         $purchaseOrder = $request->user()
             ->purchaseOrders()
@@ -33,7 +34,7 @@ class PurchaseOrderController extends Controller
             ];
         }, $request->lines));
 
-        return response()->json(new PurchaseOrderResource($purchaseOrder), 201);
+        return response()->json(PurchaseOrderResource::make($purchaseOrder), 201);
     }
 
     public function show(PurchaseOrder $purchaseOrder)
@@ -41,6 +42,23 @@ class PurchaseOrderController extends Controller
         Gate::authorize('access-purchase-order', $purchaseOrder);
 
         return new PurchaseOrderResource($purchaseOrder);
+    }
+
+    public function update(UpdatePurchaseOrderRequest $request, PurchaseOrder $purchaseOrder)
+    {
+        Gate::authorize('access-purchase-order', $purchaseOrder);
+
+        $purchaseOrder->update($request->except(['lines']));
+        $purchaseOrder->lines()->delete();
+        $purchaseOrder->lines()->createMany(array_map(function ($line) {
+            $item = InventoryItem::findByUlid($line['item_id']);
+            return [
+                ...$line,
+                'item_id' => $item->id,
+            ];
+        }, $request->lines));
+
+        return response()->json(PurchaseOrderResource::make($purchaseOrder));
     }
 
     public function destroy(PurchaseOrder $purchaseOrder)

@@ -1,15 +1,6 @@
 import { z } from "zod";
 
-export const createSchema = z.object({
-  reference: z
-    .string()
-    .regex(/^\s*$/)
-    .or(
-      z
-        .string()
-        .regex(/^[A-Za-z]\S*$/, "Custom references must start with a letter")
-        .max(16),
-    ),
+export const updateSchema = z.object({
   supplier: z.string().min(1).max(255),
   lines: z
     .array(
@@ -21,7 +12,20 @@ export const createSchema = z.object({
     .min(1),
 });
 
+export const createSchema = updateSchema.extend({
+  reference: z
+    .string()
+    .regex(/^\s*$/)
+    .or(
+      z
+        .string()
+        .regex(/^[A-Za-z]\S*$/, "Custom references must start with a letter")
+        .max(16),
+    ),
+});
+
 export type CreatePurchaseOrder = z.infer<typeof createSchema>;
+export type UpdatePurchaseOrder = z.infer<typeof updateSchema>;
 
 export type PurchaseOrderAPI = {
   id: string;

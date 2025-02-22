@@ -27,6 +27,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Purchase Orders
     Route::get('purchase-order', [PurchaseOrderController::class, 'index']);
     Route::get('purchase-order/{purchaseOrder}', [PurchaseOrderController::class, 'show']);
+    Route::put('purchase-order/{purchaseOrder}', [PurchaseOrderController::class, 'update']);
     Route::delete('purchase-order/{purchaseOrder}', [PurchaseOrderController::class, 'destroy']);
     Route::post('purchase-order', [PurchaseOrderController::class, 'store']);
     Route::get('purchase-order/{purchaseOrder}/lines', [PurchaseOrderController::class, 'indexLines']);

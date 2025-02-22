@@ -4,7 +4,7 @@ import Link from "next/link";
 import { PurchaseOrder } from "@/lib/types/purchase-order";
 import { formatDateLong } from "@/lib/utils";
 
-import { PurchaseOrderStatusBadge } from "@/components/purchase-order";
+import { PurchaseOrderStatusBadge } from "@/components/purchase-order/status-badge";
 import { FilterColumn } from "@/components/table/column-filter";
 import { SortHeader } from "@/components/table/sort-header";
 

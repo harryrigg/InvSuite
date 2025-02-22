@@ -12,7 +12,7 @@ import { useFetchInventoryItemList } from "@/hooks/queries/inventory/fetch-list"
 import { DataTable } from "@/components/table/data-table";
 import { Button } from "@/components/ui/button";
 
-import { createColumns } from "./line-table-columns";
+import { createColumns } from "./line-edit-table-columns";
 
 export const lineItemSchema = z.object({
   item_id: z.string().trim().nonempty("Item is required"),
@@ -30,9 +30,9 @@ interface Props {
   onChange: (value: LineItem[]) => void;
 }
 
-export default function LineTable({ data, onChange }: Props) {
+export default function PurchaseOrderLineEditTable({ data, onChange }: Props) {
   const [editingData, setEditingData] = useState<(LineItemEditEntry | null)[]>(
-    [],
+    Array(data.length).fill(null),
   );
 
   const { data: inventoryItems } = useFetchInventoryItemList();
