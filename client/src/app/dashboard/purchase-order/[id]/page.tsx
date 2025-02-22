@@ -20,6 +20,7 @@ import Loader from "@/components/loader";
 import { PageCardContainer } from "@/components/page-card";
 import { LinkButton } from "@/components/ui/button";
 
+import ActionsSection from "./_components/actions-section";
 import DetailsSection from "./_components/details-section";
 import LinesSection from "./_components/lines-section";
 
@@ -77,6 +78,7 @@ function Page({ purchaseOrder }: PageProps) {
       </InternalHeader>
       <PageCardContainer>
         <DetailsSection purchaseOrder={purchaseOrder} />
+        <ActionsSection purchaseOrder={purchaseOrder} />
         <LinesSection purchaseOrder={purchaseOrder} />
       </PageCardContainer>
     </>

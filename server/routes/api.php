@@ -30,5 +30,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('purchase-order/{purchaseOrder}', [PurchaseOrderController::class, 'update']);
     Route::delete('purchase-order/{purchaseOrder}', [PurchaseOrderController::class, 'destroy']);
     Route::post('purchase-order', [PurchaseOrderController::class, 'store']);
+    Route::post('purchase-order/{purchaseOrder}/mark-ordered', [PurchaseOrderController::class, 'markOrdered']);
+    Route::post('purchase-order/{purchaseOrder}/cancel', [PurchaseOrderController::class, 'cancel']);
     Route::get('purchase-order/{purchaseOrder}/lines', [PurchaseOrderController::class, 'indexLines']);
 });

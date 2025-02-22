@@ -8,6 +8,7 @@ use App\Http\Resources\PurchaseOrderLineResource;
 use App\Http\Resources\PurchaseOrderResource;
 use App\Models\InventoryItem;
 use App\Models\PurchaseOrder;
+use App\PurchaseOrderStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -66,6 +67,31 @@ class PurchaseOrderController extends Controller
         Gate::authorize('access-purchase-order', $purchaseOrder);
 
         $purchaseOrder->delete();
+    }
+
+    public function markOrdered(PurchaseOrder $purchaseOrder)
+    {
+        Gate::authorize('access-purchase-order', $purchaseOrder);
+
+        if ($purchaseOrder->status !== PurchaseOrderStatus::Draft) {
+            abort(400, 'Purchase order is not in draft status');
+        }
+
+        $purchaseOrder->update(['ordered_at' => now()]);
+    }
+
+    public function cancel(PurchaseOrder $purchaseOrder)
+    {
+        Gate::authorize('access-purchase-order', $purchaseOrder);
+
+        if (
+            $purchaseOrder->status === PurchaseOrderStatus::Received ||
+            $purchaseOrder->status === PurchaseOrderStatus::Cancelled
+        ) {
+            abort(400, 'Purchase order is already received or cancelled');
+        }
+
+        $purchaseOrder->update(['cancelled_at' => now()]);
     }
 
     public function indexLines(PurchaseOrder $purchaseOrder)
