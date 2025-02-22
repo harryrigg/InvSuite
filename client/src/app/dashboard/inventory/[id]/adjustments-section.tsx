@@ -1,4 +1,5 @@
 import {
+  ColumnFiltersState,
   PaginationState,
   SortingState,
   createColumnHelper,
@@ -14,24 +15,25 @@ import { useState } from "react";
 
 import { Adjustment } from "@/lib/types/adjustment";
 import { InventoryItem } from "@/lib/types/inventory";
-import { toTitleCase } from "@/lib/utils";
 
 import { useFetchInventoryItemAdjustmentList } from "@/hooks/queries/inventory/adjustment/fetch-list";
 
+import { AdjustmentTypeBadge } from "@/components/adjustment";
 import { FilterInput } from "@/components/filter-input";
 import { PageCard, PageCardHeader } from "@/components/page-card";
+import ColumnFilter, { FilterColumn } from "@/components/table/column-filter";
 import { DataTable } from "@/components/table/data-table";
 import { Pagination } from "@/components/table/pagination";
 import { SortHeader } from "@/components/table/sort-header";
-import { Badge } from "@/components/ui/badge";
 import { LinkButton } from "@/components/ui/button";
 
 const columnHelper = createColumnHelper<Adjustment>();
 const columns = [
   columnHelper.accessor("type", {
     header: "Type",
-    cell: (v) => <TypeBadge type={v.getValue()} />,
+    cell: (v) => <AdjustmentTypeBadge type={v.getValue()} />,
     maxSize: 60,
+    filterFn: "arrIncludesSome",
   }),
   columnHelper.accessor("created_at", {
     header: ({ column }) => <SortHeader title="Time" column={column} />,
@@ -60,6 +62,28 @@ const columns = [
   }),
 ];
 
+const filterColumns = [
+  {
+    id: "type",
+    label: "Type",
+    type: "select",
+    options: [
+      {
+        label: <AdjustmentTypeBadge type="add" bubble={false} />,
+        value: "add",
+      },
+      {
+        label: <AdjustmentTypeBadge type="subtract" bubble={false} />,
+        value: "subtract",
+      },
+      {
+        label: <AdjustmentTypeBadge type="set" bubble={false} />,
+        value: "set",
+      },
+    ],
+  },
+] satisfies FilterColumn[];
+
 interface Props {
   item: InventoryItem;
   query: ReturnType<typeof useFetchInventoryItemAdjustmentList>;
@@ -69,7 +93,11 @@ export default function AdjustmentsSection({ query, item }: Props) {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "created_at", desc: true },
   ]);
-  const [filter, setFilter] = useState("");
+
+  const [globalFilter, setGlobalFilter] = useState("");
+
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 15,
@@ -78,14 +106,20 @@ export default function AdjustmentsSection({ query, item }: Props) {
   const table = useReactTable({
     data: query.data ?? [],
     columns,
+
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
+
     getFilteredRowModel: getFilteredRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+
     getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: setPagination,
+
     state: {
       sorting,
-      globalFilter: filter,
+      globalFilter: globalFilter,
+      columnFilters,
       pagination,
     },
     getCoreRowModel: getCoreRowModel(),
@@ -97,15 +131,21 @@ export default function AdjustmentsSection({ query, item }: Props) {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col-reverse gap-2 md:flex-row">
           <FilterInput
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            className="mr-auto h-9 md:max-w-96"
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className="h-9 md:max-w-96"
+          />
+          <ColumnFilter
+            columns={filterColumns}
+            state={columnFilters}
+            setState={setColumnFilters}
           />
 
           <LinkButton
             size="sm"
             variant="outline"
             href={`/dashboard/inventory/${item.id}/adjustment/new`}
+            className="ml-auto"
           >
             <Plus /> New Adjustment
           </LinkButton>
@@ -114,23 +154,5 @@ export default function AdjustmentsSection({ query, item }: Props) {
         <Pagination state={pagination} table={table} />
       </div>
     </PageCard>
-  );
-}
-
-interface TypeBadgeProps {
-  type: Adjustment["type"];
-}
-
-function TypeBadge({ type }: TypeBadgeProps) {
-  const variants = {
-    add: "positive",
-    subtract: "negative",
-    set: "neutral",
-  } as const;
-
-  return (
-    <Badge variant={variants[type]} bubble>
-      {toTitleCase(type)}
-    </Badge>
   );
 }

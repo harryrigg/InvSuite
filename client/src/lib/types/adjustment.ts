@@ -29,17 +29,19 @@ export type AdjustmentAPI = {
   id: string;
   created_at: string;
   inventory_item_id: string;
-  type: "add" | "subtract" | "set";
+  type: AdjustmentType;
   amount: number;
   stock_count: number;
   reason: string;
 };
 
+export type AdjustmentType = "add" | "subtract" | "set";
+
 export type Adjustment = {
   id: string;
   created_at: Date;
   inventory_item_id: string;
-  type: "add" | "subtract" | "set";
+  type: AdjustmentType;
   amount: number;
   stock_count: number;
   reason: string;
