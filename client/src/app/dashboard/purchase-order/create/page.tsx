@@ -10,6 +10,7 @@ import { CreatePurchaseOrder, createSchema } from "@/lib/types/purchase-order";
 import { useCreatePurchaseOrder } from "@/hooks/queries/purchase-order/create";
 
 import { AppBreadcrumbs } from "@/components/app-breadcrumbs";
+import TextField from "@/components/fields/text-field";
 import { InternalHeader } from "@/components/internal-header";
 import {
   PageCard,
@@ -18,16 +19,7 @@ import {
   PageCardHeader,
 } from "@/components/page-card";
 import { Button, LinkButton } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormInput,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 
 import LineTable from "./_components/line-table";
 
@@ -65,35 +57,13 @@ export default function Page() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="space-y-4">
-              <FormField
-                control={form.control}
+              <TextField
                 name="reference"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Reference</FormLabel>
-                    <FormDescription>
-                      Leave empty to auto-generate
-                    </FormDescription>
-                    <FormControl>
-                      <FormInput type="text" placeholder="123456" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label="Reference"
+                description="Leave empty to auto-generate"
+                placeholder="123456"
               />
-              <FormField
-                control={form.control}
-                name="supplier"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Supplier</FormLabel>
-                    <FormControl>
-                      <FormInput type="text" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <TextField name="supplier" label="Supplier" />
             </div>
             <PageCardDivider />
             <Controller

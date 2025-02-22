@@ -19,6 +19,9 @@ import { useCreateInventoryItemAdjustment } from "@/hooks/queries/inventory/adju
 import { useFetchInventoryItem } from "@/hooks/queries/inventory/fetch";
 
 import { AppBreadcrumbs } from "@/components/app-breadcrumbs";
+import NumberField from "@/components/fields/number-field";
+import SelectField from "@/components/fields/select-field";
+import TextField from "@/components/fields/text-field";
 import { InternalHeader } from "@/components/internal-header";
 import Loader from "@/components/loader";
 import {
@@ -28,22 +31,7 @@ import {
   PageCardHeader,
 } from "@/components/page-card";
 import { Button, LinkButton } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormInput,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Form } from "@/components/ui/form";
 
 export default function Load() {
   const id = useParams<{ id: string }>().id;
@@ -101,6 +89,13 @@ function Page({ item }: PageProps) {
     }
   }, [type, amount, item.stock_count]);
 
+  const typeOptions = useMemo(() => {
+    return adjusmentTypes.map((v) => ({
+      value: v,
+      label: toTitleCase(v),
+    }));
+  }, []);
+
   return (
     <>
       <InternalHeader>
@@ -111,59 +106,13 @@ function Page({ item }: PageProps) {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="space-y-4">
-              <FormField
-                control={form.control}
+              <SelectField
                 name="type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Adjustment Type</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {adjusmentTypes.map((v) => (
-                          <SelectItem key={v} value={v}>
-                            {toTitleCase(v)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label="Adjustment Type"
+                options={typeOptions}
               />
-              <FormField
-                control={form.control}
-                name="amount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Adjustment Amount</FormLabel>
-                    <FormControl>
-                      <FormInput type="number" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="reason"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Reason for Adjustment</FormLabel>
-                    <FormControl>
-                      <FormInput type="text" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <NumberField name="amount" label="Adjustment Amount" />
+              <TextField name="reason" label="Reason for Adjustment" />
             </div>
             <PageCardDivider />
             <div className="flex gap-2">

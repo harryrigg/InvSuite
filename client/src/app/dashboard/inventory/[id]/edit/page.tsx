@@ -15,6 +15,7 @@ import { useFetchInventoryItem } from "@/hooks/queries/inventory/fetch";
 import { useUpdateInventoryItem } from "@/hooks/queries/inventory/update";
 
 import { AppBreadcrumbs } from "@/components/app-breadcrumbs";
+import TextField from "@/components/fields/text-field";
 import { InternalHeader } from "@/components/internal-header";
 import Loader from "@/components/loader";
 import {
@@ -23,15 +24,7 @@ import {
   PageCardHeader,
 } from "@/components/page-card";
 import { Button, LinkButton } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormInput,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 
 export default function Load() {
   const id = useParams<{ id: string }>().id;
@@ -87,45 +80,9 @@ function Page({ item }: PageProps) {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="space-y-4">
-              <FormField
-                control={form.control}
-                name="sku"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>SKU</FormLabel>
-                    <FormControl>
-                      <FormInput type="text" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <FormInput type="text" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <FormInput type="text" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <TextField name="sku" label="SKU" />
+              <TextField name="name" label="Name" />
+              <TextField name="description" label="Description" />
             </div>
             <PageCardFooter>
               <LinkButton variant="outline" size="sm" href={parentHref}>

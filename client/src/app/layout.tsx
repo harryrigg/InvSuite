@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${openSans.className} antialiased`}>
+      <body className={`${openSans.className} antialiased overflow-y-scroll`}>
         <App>
           {children}
           <Toaster position="bottom-center" />

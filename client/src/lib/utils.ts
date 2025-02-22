@@ -18,6 +18,10 @@ export function toastGenericError() {
   toast.error("Something went wrong. Try again later.");
 }
 
-export function formatDateUsersTimezone(date: Date) {
+export function formatDateShort(date: Date) {
   return formatDate(date, "dd/MM/yyyy (p)");
+}
+
+export function formatDateLong(date: Date) {
+  return formatDate(date, "MMMM d, yyyy (p)");
 }

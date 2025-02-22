@@ -22,8 +22,8 @@ import Loader from "@/components/loader";
 import { PageCardContainer } from "@/components/page-card";
 import { LinkButton } from "@/components/ui/button";
 
-import AdjustmentsSection from "./adjustments-section";
-import DetailsSection from "./details-section";
+import AdjustmentsSection from "./_components/adjustments-section";
+import DetailsSection from "./_components/details-section";
 
 export default function Load() {
   const id = useParams<{ id: string }>().id;
