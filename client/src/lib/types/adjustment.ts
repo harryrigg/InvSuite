@@ -29,22 +29,29 @@ export type AdjustmentAPI = {
   id: string;
   created_at: string;
   inventory_item_id: string;
+  source: AdjustmentSource;
+  source_id: string | null;
+  source_reference: string | null;
   type: AdjustmentType;
   amount: number;
   stock_count: number;
-  reason: string;
+  reason: string | null;
 };
 
+export type AdjustmentSource = "manual" | "purchase_order" | "sales_order";
 export type AdjustmentType = "add" | "subtract" | "set";
 
 export type Adjustment = {
   id: string;
   created_at: Date;
   inventory_item_id: string;
+  source: AdjustmentSource;
+  source_id: string | null;
+  source_reference: string | null;
   type: AdjustmentType;
   amount: number;
   stock_count: number;
-  reason: string;
+  reason: string | null;
 };
 
 export function transformAdjustment(adjustment: AdjustmentAPI): Adjustment {

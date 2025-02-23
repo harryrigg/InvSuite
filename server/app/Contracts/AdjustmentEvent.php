@@ -3,6 +3,6 @@
 /**
  * @property int $amount 
  * @property int $stockCount 
- * @property string $reason
+ * @property ?string $reason
  */
 interface AdjustmentEvent {}

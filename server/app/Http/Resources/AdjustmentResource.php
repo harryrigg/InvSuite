@@ -19,6 +19,9 @@ class AdjustmentResource extends Resource
         return [
             'id' => $this->ulid,
             'inventory_item_id' => $this->inventoryItem->getRouteKey(),
+            'source' => $this->source,
+            'source_id' => $this->sourceable?->getRouteKey(),
+            'source_reference' => $this->source_reference,
             'type' => $this->type,
             'amount' => $this->amount,
             'stock_count' => $this->stock_count,

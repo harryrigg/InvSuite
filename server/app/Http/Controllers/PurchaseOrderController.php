@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Aggregates\InventoryItemStockAggregate;
 use App\Http\Requests\CreatePurchaseOrderRequest;
 use App\Http\Requests\ReceiptPurchaseOrderRequest;
 use App\Http\Requests\UpdatePurchaseOrderRequest;
@@ -95,7 +96,7 @@ class PurchaseOrderController extends Controller
 
         $adjustedLines = collect($request->adjusted_lines ?? []);
 
-        $purchaseOrder->lines->each(function ($line, $index) use ($adjustedLines) {
+        $purchaseOrder->lines->each(function ($line, $index) use ($adjustedLines, $purchaseOrder) {
             $receivedQuantity = $line->quantity;
 
             $adjustment = $adjustedLines->first(fn($adjustedLine) => $adjustedLine['index'] === $index);
@@ -104,6 +105,10 @@ class PurchaseOrderController extends Controller
             }
 
             $line->update(['received_quantity' => $receivedQuantity]);
+
+            InventoryItemStockAggregate::retrieve($line->item->ulid)
+                ->addStock($receivedQuantity, null, $purchaseOrder)
+                ->persist();
         });
 
         $purchaseOrder->update(['received_at' => now()]);

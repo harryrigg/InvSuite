@@ -18,10 +18,12 @@ return new class extends Migration
 
             $table->foreignIdFor(InventoryItem::class);
 
+            $table->nullableMorphs('sourceable');
+
             $table->enum('type', ['add', 'subtract', 'set']);
             $table->integer('amount');
             $table->integer('stock_count');
-            $table->string('reason');
+            $table->string('reason')->nullable();
 
             $table->timestamp('created_at');
         });

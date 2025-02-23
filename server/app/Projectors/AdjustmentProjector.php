@@ -8,6 +8,7 @@ use App\Events\InventoryItemSetStock;
 use App\Events\InventoryItemSubtractStock;
 use App\Models\Adjustment;
 use App\Models\InventoryItem;
+use App\Models\PurchaseOrder;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
@@ -21,7 +22,11 @@ class AdjustmentProjector extends Projector
 
     public function onAddStock(InventoryItemAddStock $event): void
     {
-        $adjustment = static::createAdjustment($event, 'add');
+        if ($event->purchaseOrderId !== null) {
+            $adjustment = static::createAdjustment($event, 'add', PurchaseOrder::class, $event->purchaseOrderId);
+        } else {
+            $adjustment = static::createAdjustment($event, 'add');
+        }
         $adjustment->writeable()->save();
     }
 
@@ -40,7 +45,7 @@ class AdjustmentProjector extends Projector
         }
     }
 
-    private static function createAdjustment(ShouldBeStored&AdjustmentEvent $event, string $type): Adjustment
+    private static function createAdjustment(ShouldBeStored&AdjustmentEvent $event, string $type, ?string $source = 'manual', ?int $sourceId = null): Adjustment
     {
         return new Adjustment([
             'inventory_item_id' => InventoryItem::findByUlid($event->aggregateRootUuid())->id,
@@ -49,6 +54,7 @@ class AdjustmentProjector extends Projector
             'amount' => $event->amount,
             'stock_count' => $event->stockCount,
             'reason' => $event->reason,
+            ...($source && $sourceId ? ['sourceable_type' => $source, 'sourceable_id' => $sourceId] : []),
         ]);
     }
 }

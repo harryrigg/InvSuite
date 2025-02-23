@@ -13,6 +13,7 @@ class InventoryItemAddStock extends ShouldBeStored implements AdjustmentEvent
     public function __construct(
         public int $amount,
         public int $stockCount,
-        public string $reason,
+        public ?string $reason,
+        public ?int $purchaseOrderId = null,
     ) {}
 }

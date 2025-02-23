@@ -112,8 +112,9 @@ export default function ColumnFilter({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-64" align="start">
-        {columns.map((column) => (
+        {columns.map((column, index) => (
           <Fragment key={column.id}>
+            {index !== 0 && <DropdownMenuSeparator />}
             <DropdownMenuLabel className="flex items-center gap-2 h-8">
               {column.label}
               {hasSelected(column.id) && (
@@ -127,7 +128,6 @@ export default function ColumnFilter({
                 </button>
               )}
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
             {column.type === "select" &&
               column.options.map((option) => (
                 <DropdownMenuCheckboxItem

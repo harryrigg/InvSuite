@@ -6,6 +6,7 @@ use App\Events\InventoryItemAddStock;
 use App\Events\InventoryItemSetStock;
 use App\Events\InventoryItemSubtractStock;
 use App\Exceptions\IllegalStockAdjustmentException;
+use App\Models\PurchaseOrder;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
 class InventoryItemStockAggregate extends AggregateRoot
@@ -18,9 +19,9 @@ class InventoryItemStockAggregate extends AggregateRoot
         return $this;
     }
 
-    public function addStock(int $amount, string $reason): self
+    public function addStock(int $amount, ?string $reason, ?PurchaseOrder $purchaseOrder = null): self
     {
-        $this->recordThat(new InventoryItemAddStock($amount, $this->count + $amount, $reason));
+        $this->recordThat(new InventoryItemAddStock($amount, $this->count + $amount, $reason, $purchaseOrder?->id));
         return $this;
     }
 
